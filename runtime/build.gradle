@@ -1,0 +1,12 @@
+plugins {
+    id 'java'
+}
+
+dependencies {
+
+    runtimeOnly "dev.jorel:commandapi-plugin:${project.command_api}"
+    runtimeOnly "io.github.kosmx.emotes:emotesBukkit:2.2.+"
+    runtimeOnly "com.comphenix.protocol:ProtocolLib:${project.protocollib}"
+}
+
+//This adds plugin dependencies to spigradle without messing with the root projects compile/runtime classpath

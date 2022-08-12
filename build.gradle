@@ -1,0 +1,60 @@
+plugins {
+    id 'java'
+    id "io.freefair.lombok" version "6.5.+"
+    id 'kr.entree.spigradle' version '2.4.2'
+}
+
+group 'dev.kosmx.emotesCommand'
+version '1.0-SNAPSHOT'
+
+allprojects {
+    repositories {
+        mavenCentral()
+        maven {
+            name 'KosmX\'s maven'
+            url = 'https://maven.kosmx.dev/'
+        }
+        maven {
+            name 'minecraft-libraries'
+            url "https://libraries.minecraft.net"
+        }
+        maven { url "https://repo.dmulloy2.net/repository/public/" }
+        mavenLocal() //TODO remove me!
+    }
+}
+
+configurations {
+    runtimePlugin
+
+}
+
+dependencies {
+    compileOnly spigot('1.18.2') //Target Spigot 1.16.5
+    compileOnly "dev.jorel:commandapi-core:${project.command_api}"
+    compileOnly "io.github.kosmx.emotes:emotesServer:${project.emotecraft}"
+    compileOnly "com.mojang:brigadier:${project.brigadier}"
+
+}
+
+spigot {
+    authors 'KosmX'
+    depends 'CommandAPI', 'emotecraft'
+    apiVersion '1.16'
+    permissions {
+        'emotes.user' {
+            description "Allow emote play on SELF"
+            defaults 'true'
+        }
+        'emotes.master' {
+            description "Play emotes on other people, access to forced emotes"
+            defaults 'op'
+        }
+    }
+
+}
+
+
+compileJava {
+    options.release.set 16 //Target is Java8 so it can work on legacy servers (1.17.1 with old Java)
+}
+
