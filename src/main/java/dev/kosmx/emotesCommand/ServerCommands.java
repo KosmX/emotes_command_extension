@@ -1,9 +1,11 @@
 package dev.kosmx.emotesCommand;
 
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import dev.jorel.commandapi.*;
+import dev.jorel.commandapi.CommandAPI;
+import dev.jorel.commandapi.CommandPermission;
+import dev.jorel.commandapi.CommandTree;
+import dev.jorel.commandapi.SuggestionInfo;
 import dev.jorel.commandapi.arguments.*;
 import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
 import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
@@ -63,13 +65,17 @@ public final class ServerCommands {
                         }))
                         .then(new PlayerArgument("player").withPermission(BukkitConnector.getEmoteMaster())
                                 .executes(((sender, args) -> {
-                                    ServerEmoteAPI.playEmote(((Player)args[1]).getUniqueId(), null, false);
+                                    ServerEmoteAPI.playEmote(((Player)args[0]).getUniqueId(), null, false);
                                 }))
                         )
                 )
                 .then(new LiteralArgument("reload").withPermission(CommandPermission.OP)
                         .executes((sender, args) -> {
                             UniversalEmoteSerializer.loadEmotes();
+                            sender.sendMessage("""
+                                    Emotes reloaded
+                                    Users will have to re-login to see the change.
+                                    You can already use these from commands""");
                         }))
                 .register();
     }
@@ -87,7 +93,7 @@ public final class ServerCommands {
     private static class EmoteArgumentProvider implements ArgumentSuggestions {
 
         @Override
-        public CompletableFuture<Suggestions> suggest(SuggestionInfo info, SuggestionsBuilder builder) throws CommandSyntaxException {
+        public CompletableFuture<Suggestions> suggest(SuggestionInfo info, SuggestionsBuilder builder) {
             HashMap<UUID, KeyframeAnimation> emotes = getEmotes(info.sender().hasPermission(BukkitConnector.getEmoteMaster().toString()));
 
             for (KeyframeAnimation emote : emotes.values()) {
