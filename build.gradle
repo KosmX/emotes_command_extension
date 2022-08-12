@@ -40,6 +40,7 @@ spigot {
     authors 'KosmX'
     depends 'CommandAPI', 'emotecraft'
     apiVersion '1.16'
+    load STARTUP
     permissions {
         'emotes.user' {
             description "Allow emote play on SELF"

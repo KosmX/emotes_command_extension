@@ -96,11 +96,11 @@ public final class ServerCommands {
                     if (name.contains(" ")) {
                         name = "\"" + name + "\"";
                     }
-                    if (info.currentArg().length() < 2 || name.contains(info.currentArg())) {
+                    if (info.currentArg().isEmpty() || name.toLowerCase().contains(info.currentArg().toLowerCase())) {
                         builder.suggest(name);
                     }
                 } else {
-                    if (info.currentArg().length() < 2 || emote.getUuid().toString().contains(info.currentArg())) {
+                    if (info.currentArg().isEmpty() || emote.getUuid().toString().toLowerCase().contains(info.currentArg().toLowerCase())) {
                         builder.suggest(emote.getUuid().toString());
                     }
                 }
