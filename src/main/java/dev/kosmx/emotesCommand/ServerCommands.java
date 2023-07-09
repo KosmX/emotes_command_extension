@@ -2,10 +2,7 @@ package dev.kosmx.emotesCommand;
 
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import dev.jorel.commandapi.CommandAPI;
-import dev.jorel.commandapi.CommandPermission;
-import dev.jorel.commandapi.CommandTree;
-import dev.jorel.commandapi.SuggestionInfo;
+import dev.jorel.commandapi.*;
 import dev.jorel.commandapi.arguments.*;
 import dev.jorel.commandapi.exceptions.WrapperCommandSyntaxException;
 import dev.kosmx.playerAnim.core.data.KeyframeAnimation;
@@ -29,26 +26,26 @@ public final class ServerCommands {
                                     Player player = getPlayerFromSource(sender);
 
                                     if (!sender.hasPermission(BukkitConnector.getEmoteMaster().toString()) && ServerEmoteAPI.isForcedEmote(player.getUniqueId()))
-                                        throw CommandAPI.fail("Can't stop forced emote without admin rights");
+                                        throw CommandAPI.failWithString("Can't stop forced emote without admin rights");
 
                                     ServerEmoteAPI.playEmote(
                                             player.getUniqueId(),
-                                            EmoteArgumentProvider.getEmote(sender, (String) args[0]),
+                                            EmoteArgumentProvider.getEmote(sender, (String) args.get(0)),
                                             false);
                                 })
                                 .then(new PlayerArgument("player").withPermission(BukkitConnector.getEmoteMaster())
                                         .executes((sender, args) -> {
                                             ServerEmoteAPI.playEmote(
-                                                    ((Player)args[1]).getUniqueId(),
-                                                    EmoteArgumentProvider.getEmote(sender, (String) args[0]),
+                                                    ((Player)args.get(1)).getUniqueId(),
+                                                    EmoteArgumentProvider.getEmote(sender, (String) args.get(0)),
                                                     false);
                                         })
                                         .then(new BooleanArgument("forced")
                                                 .executes(((sender, args) -> {
                                                     ServerEmoteAPI.playEmote(
-                                                            ((Player)args[1]).getUniqueId(),
-                                                            EmoteArgumentProvider.getEmote(sender, (String) args[0]),
-                                                            (boolean) args[2]);
+                                                            ((Player)args.get(1)).getUniqueId(),
+                                                            EmoteArgumentProvider.getEmote(sender, (String) args.get(0)),
+                                                            (boolean) args.get(2));
                                                 }))
                                         )
                                 )
@@ -59,13 +56,13 @@ public final class ServerCommands {
                             Player player = getPlayerFromSource(sender);
 
                             if (!sender.hasPermission(BukkitConnector.getEmoteMaster().toString()) && ServerEmoteAPI.isForcedEmote(player.getUniqueId()))
-                                throw CommandAPI.fail("Can't stop forced emote without admin rights");
+                                throw CommandAPI.failWithString("Can't stop forced emote without admin rights");
 
                             ServerEmoteAPI.playEmote(player.getUniqueId(), null, false);
                         }))
                         .then(new PlayerArgument("player").withPermission(BukkitConnector.getEmoteMaster())
                                 .executes(((sender, args) -> {
-                                    ServerEmoteAPI.playEmote(((Player)args[0]).getUniqueId(), null, false);
+                                    ServerEmoteAPI.playEmote(((Player)args.get(0)).getUniqueId(), null, false);
                                 }))
                         )
                 )
@@ -87,13 +84,13 @@ public final class ServerCommands {
         } else if (sender instanceof ProxiedCommandSender proxiedCommandSender && proxiedCommandSender.getCallee() instanceof Player player) {
             return player;
         }
-        throw CommandAPI.fail("No player target defined");
+        throw CommandAPI.failWithString("No player target defined");
     }
 
-    private static class EmoteArgumentProvider implements ArgumentSuggestions {
+    private static class EmoteArgumentProvider implements ArgumentSuggestions<CommandSender> {
 
         @Override
-        public CompletableFuture<Suggestions> suggest(SuggestionInfo info, SuggestionsBuilder builder) {
+        public CompletableFuture<Suggestions> suggest(SuggestionInfo<CommandSender> info, SuggestionsBuilder builder) {
             HashMap<UUID, KeyframeAnimation> emotes = getEmotes(info.sender().hasPermission(BukkitConnector.getEmoteMaster().toString()));
 
             for (KeyframeAnimation emote : emotes.values()) {
@@ -124,7 +121,7 @@ public final class ServerCommands {
             try {
                 UUID emoteID = UUID.fromString(id);
                 KeyframeAnimation emote = emotes.get(emoteID);
-                if (emote == null) throw CommandAPI.fail("No emote with ID: " + emoteID);
+                if (emote == null) throw CommandAPI.failWithString("No emote with ID: " + emoteID);
                 return emote;
             } catch(IllegalArgumentException ignore) {} //Not a UUID
 
@@ -134,7 +131,7 @@ public final class ServerCommands {
                     if (name.equals(id)) return emote;
                 }
             }
-            throw CommandAPI.fail("Not emote with name: " + id);
+            throw CommandAPI.failWithString("Not emote with name: " + id);
         }
     }
 

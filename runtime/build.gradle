@@ -4,7 +4,7 @@ plugins {
 
 dependencies {
 
-    runtimeOnly "dev.jorel:commandapi-plugin:${project.command_api}"
+    runtimeOnly "dev.jorel:commandapi-bukkit:${project.command_api}"
     runtimeOnly "io.github.kosmx.emotes:emotesBukkit:2.2.+"
     runtimeOnly "com.comphenix.protocol:ProtocolLib:${project.protocollib}"
 }
