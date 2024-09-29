@@ -13,6 +13,8 @@ import org.bukkit.command.ProxiedCommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -75,6 +77,11 @@ public final class ServerCommands {
                                     You can already use these from commands""");
                         }))
                 .register();
+        Optional<KeyframeAnimation> emote = ServerEmoteAPI.getLoadedEmotes().entrySet().stream().filter(it -> it.getValue().extraData.get("name").equals("emote name")).findFirst().map(Map.Entry::getValue);
+        if (emote.isPresent()) {
+            var e = emote.get();
+            // now, you can play this
+        }
     }
 
 
